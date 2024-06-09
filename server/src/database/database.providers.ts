@@ -1,5 +1,4 @@
 import { DataSource } from 'typeorm';
-import * as fs from 'fs';
 
 export const databaseProviders = [
   {
@@ -13,10 +12,14 @@ export const databaseProviders = [
         password: process.env.DATABASE_PASS,
         database: process.env.DATABASE_NAME,
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        synchronize: true,
-        ssl: {
-          ca: fs.readFileSync('./src/certificates/ca.pem').toString(),
-          rejectUnauthorized: true,
+        synchronize: process.env.DATABASE_SYNC === 'true',
+        logging: true,
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+            // ca: fs.readFileSync('./src/certificates/ca.pem').toString(),
+          },
         },
       });
 

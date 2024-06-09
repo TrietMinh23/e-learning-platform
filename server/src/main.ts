@@ -1,11 +1,19 @@
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { setupSwagger } from './config/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { AllExceptionsFilter } from './all-exceptions.filter';
+import { useContainer } from 'class-validator';
+import { HttpExceptionFilter } from './common/error/http-exception.filter';
+import { setupSwagger } from './configs/swagger';
+import { UpdateValuesMissingErrorFilter } from './common/error/exception-filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(
+    new HttpExceptionFilter(),
+    new UpdateValuesMissingErrorFilter(),
+  );
 
   setupSwagger(app);
 
@@ -15,8 +23,8 @@ async function bootstrap() {
     }),
   );
 
-  const httpAdapter = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+  // const httpAdapter = app.get(HttpAdapterHost);
+  // app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
   await app.listen(5000);
 }
