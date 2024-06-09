@@ -7,5 +7,6 @@ define(User, (faker: typeof Faker) => {
   user.name = faker.name.findName();
   user.email = faker.internet.email();
   user.password = faker.random.word();
+  user.ABCD = faker.random.word();
   return user;
 });

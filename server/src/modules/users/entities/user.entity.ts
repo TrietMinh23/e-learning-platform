@@ -8,6 +8,9 @@ export class User {
   @Column({ type: 'varchar', length: 52, nullable: false })
   name: string;
 
+  @Column({ type: 'varchar', length: 52, nullable: false })
+  ABCD: string;
+
   @Column({
     type: 'varchar',
     length: 320,
