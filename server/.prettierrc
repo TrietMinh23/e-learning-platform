@@ -1,4 +1,12 @@
+<<<<<<< Updated upstream
 {
   "singleQuote": true,
   "trailingComma": "all"
 }
+=======
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "endOfLine": "auto"
+}
+>>>>>>> Stashed changes
