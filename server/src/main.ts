@@ -1,31 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
-import { useContainer } from 'class-validator';
-import { HttpExceptionFilter } from './common/error/http-exception.filter';
-import { setupSwagger } from './configs/swagger';
-import { UpdateValuesMissingErrorFilter } from './common/error/exception-filter';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(
-    new HttpExceptionFilter(),
-    new UpdateValuesMissingErrorFilter(),
-  );
 
-  setupSwagger(app);
+  const config = new DocumentBuilder()
+    .setTitle('Median')
+    .setDescription('The Median API description')
+    .setVersion('0.1')
+    .build();
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      stopAtFirstError: true,
-    }),
-  );
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
-  // const httpAdapter = app.get(HttpAdapterHost);
-  // app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
-
-  await app.listen(5000);
+  await app.listen(3000);
 }
 bootstrap();

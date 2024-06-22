@@ -1,0 +1,34 @@
+.rangePicker {
+  :global {
+    .ant-picker {
+      border-radius: 20px;
+      padding: 10px 16px;
+      color: #40423f;
+    }
+    .ant-picker-outlined {
+      border-color: #e1e1e1;
+    }
+    .ant-picker-input {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 20px;
+      text-align: left;
+      color: theme('colors.natural.700');
+      width: 42px !important;
+
+      input {
+        width: 40px;
+      }
+    }
+    .ant-picker-separator {
+      display: none;
+    }
+
+    .ant-picker-suffix {
+      // display: flex !important;
+      flex-grow: 1 !important;
+      justify-content: end;
+      align-items: end;
+    }
+  }
+}

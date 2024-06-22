@@ -1,33 +1,110 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Inter", sans-serif;
+  }
+  h1,
+  h2,
+  h3 {
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: 44px;
+    line-height: 56px;
+  }
+  h2 {
+    font-size: 32px;
+    line-height: 44px;
+  }
+
+  h3 {
+    font-size: 28px;
+    line-height: 38px;
+  }
+
+  h4 {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .body-medium {
+    font-weight: 500;
+    font-size: 14px !important;
+    line-height: 20px !important;
+  }
+
+  .body-xxl {
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .body-large {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .body-1,
+  .body-2,
+  .body-3,
+  .body-4,
+  .body-5 {
+    font-weight: 400;
+  }
+
+  .body-1 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .body-2 {
+    font-size: 18px;
+    line-height: 26px;
+  }
+
+  .body-3 {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .body-4 {
+    font-size: 14px !important;
+    line-height: 20px !important;
+  }
+
+  .body-5 {
+    font-size: 12px;
+    line-height: 16px;
+  }
+}
+/* CSS tùy chỉnh */
+::-webkit-scrollbar {
+  width: 4px; /* Độ rộng của thanh cuộn dọc */
+  height: 4px; /* Độ cao của thanh cuộn ngang */
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3); /* Màu của thanh cuộn */
+  border-radius: 3px; /* Bo tròn góc */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Nền thanh cuộn */
 }

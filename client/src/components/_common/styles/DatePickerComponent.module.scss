@@ -1,0 +1,12 @@
+.picker {
+  :global {
+    .ant-picker {
+      border-radius: 20px;
+      padding: 10px 16px;
+      color: #40423f;
+    }
+    .ant-picker-outlined {
+      border-color: #e1e1e1;
+    }
+  }
+}

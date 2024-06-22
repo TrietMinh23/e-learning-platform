@@ -1,0 +1,27 @@
+.rangePicker :global .ant-picker {
+  border-radius: 20px;
+  padding: 10px 16px;
+  color: #40423f;
+}
+.rangePicker :global .ant-picker-outlined {
+  border-color: #e1e1e1;
+}
+.rangePicker :global .ant-picker-input {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: left;
+  color: theme("colors.natural.700");
+  width: 42px !important;
+}
+.rangePicker :global .ant-picker-input input {
+  width: 40px;
+}
+.rangePicker :global .ant-picker-separator {
+  display: none;
+}
+.rangePicker :global .ant-picker-suffix {
+  flex-grow: 1 !important;
+  justify-content: end;
+  align-items: end;
+}/*# sourceMappingURL=FilterItem.module.css.map */
