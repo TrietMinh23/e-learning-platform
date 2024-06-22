@@ -1,0 +1,19 @@
+@import "@styles/mixins.scss";
+
+.createFormContainer {
+  :global {
+    .ant-btn-primary {
+      @include btn-secondary;
+      border-radius: 10px;
+    }
+
+    #previous {
+      @include btn-main;
+      border-radius: 10px;
+    }
+
+    .ant-pagination .ant-pagination-item-active a {
+      color: yellow;
+    }
+  }
+}

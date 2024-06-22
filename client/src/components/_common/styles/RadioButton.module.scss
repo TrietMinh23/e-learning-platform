@@ -1,0 +1,8 @@
+.buttonContainer {
+  :global {
+    .ant-btn {
+      border: none;
+      box-shadow: none;
+    }
+  }
+}

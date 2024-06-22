@@ -1,0 +1,8 @@
+.picker :global .ant-picker {
+  border-radius: 20px;
+  padding: 10px 16px;
+  color: #40423f;
+}
+.picker :global .ant-picker-outlined {
+  border-color: #e1e1e1;
+}/*# sourceMappingURL=DatePickerComponent.module.css.map */

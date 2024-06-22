@@ -1,0 +1,6 @@
+.sliderContainer :global .slick-slider {
+  border-radius: 40px;
+}
+.sliderContainer :global .slick-slider .slick-list {
+  border-radius: 40px;
+}/*# sourceMappingURL=SportFieldSwiper.module.css.map */

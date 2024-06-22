@@ -1,0 +1,56 @@
+@mixin btn($textColor, $bgColor) {
+  border-radius: 10px;
+  color: $textColor;
+  background: $bgColor;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  padding: 24px 24px;
+  width: 200px;
+
+  &:hover {
+    background: $bgColor !important;
+    opacity: 0.95 !important;
+    color: $textColor !important;
+  }
+}
+@mixin btn-secondary {
+  @include btn(theme("colors.orange"), theme("colors.white"));
+  border-width: 2px;
+  border-color: theme("colors.orange");
+}
+
+@mixin btn-main {
+  @include btn(theme("colors.white"), theme("colors.orange"));
+  border: none;
+}
+
+// @mixin centered-placeholder {
+//   border: 1px solid theme('colors.orange"');
+//   text-align: center;
+//   font-weight: 700;
+//   font-size: 16px;
+
+//   outline: none;
+//   &::placeholder {
+//     position: absolute;
+//     top: 50%;
+//     left: 50%;
+//     transform: translate(-50%, -50%);
+//     text-align: center;
+//     color: theme('colors.neutral.300');
+//     pointer-events: none;
+//   }
+//   &:focus {
+//     outline: none;
+//     border-color: theme('colors.orange"');
+//   }
+//   &:hover {
+//     outline: none;
+//     border-color: theme('colors.orange"');
+//   }
+// }
+
+@mixin centeredInput {
+  @include centered-placeholder;
+}
