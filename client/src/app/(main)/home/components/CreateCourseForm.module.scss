@@ -12,8 +12,18 @@
       border-radius: 10px;
     }
 
-    .ant-pagination .ant-pagination-item-active a {
-      color: yellow;
+    // .ant-pagination .ant-pagination-item-active a {
+    //   color: yellow;
+    // }
+
+    .ant-pagination .ant-pagination-item-active a,  .ant-pagination .ant-pagination-item-active {
+      border-radius: 50px;
+      color: red;
+      border-color: red;
+    }
+
+    #previous.ant-btn.css-dev-only-do-not-override-m4timi.ant-btn-primary.mt-12{
+      background-color: purple;
     }
   }
 }

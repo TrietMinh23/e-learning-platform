@@ -4,7 +4,7 @@ import Image from "next/image";
 import { BellOutlined } from "@ant-design/icons";
 
 const InstructorHeader = ({ contentName }: { contentName: string }) => {
-  contentName = "Create a new course";
+  // contentName = "Create a new course";
   const currentTime = new Date();
   const currentHour = currentTime.getHours();
 
