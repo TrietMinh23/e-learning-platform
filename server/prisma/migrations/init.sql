@@ -2,6 +2,7 @@
 drop database 'defaultdb' if exists;
 create database 'defaultdb';
 
+-- Triet
 CREATE TABLE User (
 
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -90,6 +91,7 @@ CREATE TABLE EnrollementCourse (
   
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- Thu
 CREATE TABLE CourseInstructor (
   
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
