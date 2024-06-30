@@ -1,0 +1,15 @@
+@import "@styles/mixins.scss";
+
+.editProfileFormContainer {
+  :global {
+    .ant-btn.css-dev-only-do-not-override-m4timi.ant-btn-primary {
+      // set btn color
+      background-color: #04AA6D;
+    }
+
+    // #btnsubmit.ant-btn.css-dev-only-do-not-override-m4timi.ant-btn-primary {
+    //   // set btn color
+    //   background-color: yellow;
+    // }
+  }
+}
