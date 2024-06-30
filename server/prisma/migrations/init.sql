@@ -132,7 +132,7 @@ CREATE TABLE
     id SMALLINT UNSIGNED NOT NULL,
     title VARCHAR (80) NOT NULL,
     number_of_item SMALLINT UNSIGNED NOT NULL,
-    duration SMALLINT UNSIGNED NOT NULL,
+    duration TIME NOT NULL,
     status ENUM('pending', 'publish', 'unpublish') NOT NULL,
     order_section_id SMALLINT UNSIGNED NOT NULL,
     CONSTRAINT PK_Section PRIMARY KEY (course_id, section_id),
