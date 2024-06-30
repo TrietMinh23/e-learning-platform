@@ -1,6 +1,12 @@
 -- use this file to create table on the database
 drop database 'defaultdb' if exists;
+
+
 create database 'defaultdb';
+
+
+use defaultdb;
+
 
 -- Triet
 CREATE TABLE
@@ -10,7 +16,7 @@ CREATE TABLE
     email VARCHAR (320) NOT NULL UNIQUE,
     position VARCHAR (50) NOT NULL,
     role ENUM('admin', 'learner', 'instructor') NOT NULL,
-    CONSTRAINT PK_User PRIMARY KEY (user_id),
+    CONSTRAINT PK_User PRIMARY KEY (user_id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -20,7 +26,7 @@ CREATE TABLE
   Admin (
     user_id MEDIUMINT UNSIGNED NOT NULL,
     CONSTRAINT PK_Admin PRIMARY KEY (user_id),
-    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES User (id),
+    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES User (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -31,7 +37,7 @@ CREATE TABLE
     user_id MEDIUMINT UNSIGNED NOT NULL,
     learner_default_language VARCHAR (20) NOT NULL,
     CONSTRAINT PK_Learner PRIMARY KEY (user_id),
-    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES User (id),
+    CONSTRAINT FK_Learner_User FOREIGN KEY (user_id) REFERENCES User (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -49,7 +55,7 @@ CREATE TABLE
     description VARCHAR (1000) NOT NULL,
     type ENUM('instructor', 'vip_instructor') NOT NULL,
     CONSTRAINT PK_Instructor PRIMARY KEY (user_id),
-    CONSTRAINT FK_User FOREIGN KEY (user_id) REFERENCES User (id),
+    CONSTRAINT FK_Instructor_User FOREIGN KEY (user_id) REFERENCES User (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -64,7 +70,7 @@ CREATE TABLE
     zip_code VARCHAR (6) NOT NULL,
     image VARCHAR (2084) NOT NULL,
     CONSTRAINT PK_VipInstructor PRIMARY KEY (instructor_id),
-    CONSTRAINT FK_Instructor FOREIGN KEY (instructor_id) REFERENCES Instructor (user_id),
+    CONSTRAINT FK_Instructor FOREIGN KEY (instructor_id) REFERENCES Instructor (user_id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -74,7 +80,7 @@ CREATE TABLE
   Category (
     category_id TINYINT UNSIGNED NOT NULL,
     category_name VARCHAR (50) NOT NULL,
-    CONSTRAINT PK_Category PRIMARY KEY (category_id),
+    CONSTRAINT PK_Category PRIMARY KEY (category_id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -86,7 +92,17 @@ CREATE TABLE
     name VARCHAR (50) NOT NULL,
     category_id TINYINT UNSIGNED NOT NULL,
     CONSTRAINT PK_SubCategory PRIMARY KEY (id),
-    CONSTRAINT FK_Category FOREIGN KEY (id) REFERENCES Category (category_id),
+    CONSTRAINT FK_Category FOREIGN KEY (id) REFERENCES Category (category_id)
+  ) DEFAULT CHARACTER
+SET
+  utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+CREATE TABLE
+  Tier (
+    id TINYINT UNSIGNED AUTO_INCREMENT,
+    price MEDIUMINT UNSIGNED NOT NULL,
+    CONSTRAINT PK_Tier PRIMARY KEY (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -106,7 +122,7 @@ CREATE TABLE
     subcategory_id TINYINT UNSIGNED NOT NULL,
     CONSTRAINT PK_Course PRIMARY KEY (id),
     CONSTRAINT FK_SubCategory FOREIGN KEY (subcategory_id) REFERENCES SubCategory (id),
-    CONSTRAINT FK_Tier FOREIGN KEY (tier_id) REFERENCES Tier (id),
+    CONSTRAINT FK_Course_Tier FOREIGN KEY (tier_id) REFERENCES Tier (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -117,7 +133,7 @@ CREATE TABLE
     course_id MEDIUMINT UNSIGNED NOT NULL,
     course_objective VARCHAR (160) NOT NULL,
     CONSTRAINT PK_CourseObjective PRIMARY KEY (course_id, course_objective),
-    CONSTRAINT FK_Course FOREIGN KEY (course_id) REFERENCES Course (id),
+    CONSTRAINT FK_Course FOREIGN KEY (course_id) REFERENCES Course (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -132,9 +148,10 @@ CREATE TABLE
     duration TIME NOT NULL,
     status ENUM('pending', 'publish', 'unpublish') NOT NULL,
     order_section_id SMALLINT UNSIGNED NOT NULL,
-    CONSTRAINT PK_Section PRIMARY KEY (course_id, section_id),
-    CONSTRAINT FK_Course FOREIGN KEY (course_id) REFERENCES Course (id),
-    CONSTRAINT FK_Section FOREIGN KEY (order_section_id) REFERENCES Section (section_id),
+    CONSTRAINT PK_Section PRIMARY KEY (course_id, id),
+    CONSTRAINT FK_Section_Course FOREIGN KEY (course_id) REFERENCES Course (id),
+    INDEX idx_id (course_id, id),
+    CONSTRAINT FK_Section_Section FOREIGN KEY (course_id, order_section_id) REFERENCES Section (course_id, id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -146,11 +163,14 @@ CREATE TABLE
     section_id SMALLINT UNSIGNED NOT NULL,
     course_id MEDIUMINT UNSIGNED NOT NULL,
     title VARCHAR (80) NOT NULL,
+    order_item_id SMALLINT UNSIGNED NOT NULL,
     description VARCHAR (255) NOT NULL,
     type ENUM('lecture', 'quiz') NOT NULL,
+    INDEX idx_id (id, section_id, course_id),
     CONSTRAINT PK_Item PRIMARY KEY (id, section_id, course_id),
-    CONSTRAINT FK_Section_id FOREIGN KEY (section_id) REFERENCES Section (id),
-    CONSTRAINT FK_Section_courseId FOREIGN KEY (course_id) REFERENCES Section (course_id),
+    CONSTRAINT FK_Section_id FOREIGN KEY (section_id, course_id) REFERENCES Section (course_id, id),
+    --  CONSTRAINT FK_Section_courseId FOREIGN KEY (course_id) REFERENCES Section (course_id, id),
+    CONSTRAINT FK_Item_Item FOREIGN KEY (order_item_id, section_id, course_id) REFERENCES Section (id, section_id, course_id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -343,6 +363,7 @@ CREATE TABLE
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+
 CREATE TABLE
   CourseInstructorHistory (
     course_id MEDIUMINT UNSIGNED NOT NULL,
@@ -360,6 +381,7 @@ CREATE TABLE
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+
 CREATE TABLE
   CourseProgress (
     course_id MEDIUMINT UNSIGNED NOT NULL,
@@ -375,6 +397,7 @@ CREATE TABLE
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+
 CREATE TABLE
   Adjustment (
     course_id MEDIUMINT UNSIGNED NOT NULL,
@@ -387,6 +410,7 @@ CREATE TABLE
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 
 CREATE TABLE
   Notification (
@@ -406,6 +430,7 @@ CREATE TABLE
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+
 CREATE TABLE
   PromotionalProgram (
     id TINYINT UNSIGNED AUTO_INCREMENT,
@@ -420,6 +445,7 @@ CREATE TABLE
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+
 CREATE TABLE
   PromotionalProgramHistory (
     id TINYINT UNSIGNED NOT NULL,
@@ -431,6 +457,7 @@ CREATE TABLE
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+
 CREATE TABLE
   Tier (
     id TINYINT UNSIGNED AUTO_INCREMENT,
@@ -438,6 +465,7 @@ CREATE TABLE
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 
 CREATE TABLE
   CourseHighlight (
@@ -454,6 +482,7 @@ CREATE TABLE
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+
 CREATE TABLE
   Payment (
     id MEDIUMINT UNSIGNED AUTO_INCREMENT,
@@ -465,6 +494,7 @@ CREATE TABLE
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+
 CREATE TABLE
   MonthlyCourseIncome (
     course_id MEDIUMINT UNSIGNED NOT NULL,
@@ -475,6 +505,7 @@ CREATE TABLE
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 
 CREATE TABLE
   MonthlyCourseIncomeVipInstructor (
