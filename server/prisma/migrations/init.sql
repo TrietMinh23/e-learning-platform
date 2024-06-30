@@ -1,9 +1,6 @@
 -- use this file to create table on the database
 drop database 'defaultdb' if exists;
-
-
 create database 'defaultdb';
-
 
 -- Triet
 CREATE TABLE
