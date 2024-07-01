@@ -1,10 +1,8 @@
 -- use this file to create table on the database
--- drop database 'defaultdb' if exists;
--- create database 'defaultdb';
+drop database if exists defaultdb;
+create database defaultdb;
 use defaultdb;
 
-
--- Triet
 CREATE TABLE
   User (
     id MEDIUMINT UNSIGNED NOT NULL,
@@ -22,7 +20,7 @@ CREATE TABLE
   Admin (
     admin_id MEDIUMINT UNSIGNED NOT NULL,
     CONSTRAINT PK_Admin PRIMARY KEY (admin_id),
-    CONSTRAINT FK_User FOREIGN KEY (admin_id) REFERENCES User (id)
+    CONSTRAINT FK_Admin_User FOREIGN KEY (admin_id) REFERENCES User (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -66,7 +64,7 @@ CREATE TABLE
     zip_code VARCHAR (6) NOT NULL,
     image VARCHAR (2084) NOT NULL,
     CONSTRAINT PK_VipInstructor PRIMARY KEY (vip_instructor_id),
-    CONSTRAINT FK_Instructor FOREIGN KEY (vip_instructor_id) REFERENCES Instructor (instructor_id)
+    CONSTRAINT FK_VipInstructor_Instructor FOREIGN KEY (vip_instructor_id) REFERENCES Instructor (instructor_id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -88,7 +86,7 @@ CREATE TABLE
     name VARCHAR (50) NOT NULL,
     category_id TINYINT UNSIGNED NOT NULL,
     CONSTRAINT PK_SubCategory PRIMARY KEY (id),
-    CONSTRAINT FK_Category FOREIGN KEY (id) REFERENCES Category (category_id)
+    CONSTRAINT FK_SubCategory_Category FOREIGN KEY (id) REFERENCES Category (category_id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -117,7 +115,7 @@ CREATE TABLE
     status ENUM('pending', 'approved', 'rejected') NOT NULL,
     subcategory_id TINYINT UNSIGNED NOT NULL,
     CONSTRAINT PK_Course PRIMARY KEY (id),
-    CONSTRAINT FK_SubCategory FOREIGN KEY (subcategory_id) REFERENCES SubCategory (id),
+    CONSTRAINT FK_Course_SubCategory FOREIGN KEY (subcategory_id) REFERENCES SubCategory (id),
     CONSTRAINT FK_Course_Tier FOREIGN KEY (tier_id) REFERENCES Tier (id)
   ) DEFAULT CHARACTER
 SET
@@ -129,7 +127,7 @@ CREATE TABLE
     course_id MEDIUMINT UNSIGNED NOT NULL,
     course_objective VARCHAR (160) NOT NULL,
     CONSTRAINT PK_CourseObjective PRIMARY KEY (course_id, course_objective),
-    CONSTRAINT FK_Course FOREIGN KEY (course_id) REFERENCES Course (id)
+    CONSTRAINT FK_CourseObjective_Course FOREIGN KEY (course_id) REFERENCES Course (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -164,7 +162,7 @@ CREATE TABLE
     type ENUM('lecture', 'quiz') NOT NULL,
     CONSTRAINT PK_Item PRIMARY KEY (id, section_id, course_id),
     INDEX idx_id (id, section_id, course_id),
-    CONSTRAINT FK_Section_id FOREIGN KEY (course_id, section_id) REFERENCES Section (course_id, id),
+    CONSTRAINT FK_Item_Section FOREIGN KEY (course_id, section_id) REFERENCES Section (course_id, id),
     CONSTRAINT FK_Item_Item FOREIGN KEY (order_item_id, section_id, course_id) REFERENCES Item (id, section_id, course_id)
   ) DEFAULT CHARACTER
 SET
@@ -178,7 +176,7 @@ CREATE TABLE
     course_id MEDIUMINT UNSIGNED NOT NULL,
     create_at DATETIME NOT NULL,
     CONSTRAINT PK_ItemHistory PRIMARY KEY (item_id, section_id, course_id, create_at),
-    CONSTRAINT FK_Item_id FOREIGN KEY (item_id, section_id, course_id) REFERENCES Item (id, section_id, course_id)
+    CONSTRAINT FK_ItemHistory_Item FOREIGN KEY (item_id, section_id, course_id) REFERENCES Item (id, section_id, course_id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -191,7 +189,7 @@ CREATE TABLE
     url VARCHAR (2084) NOT NULL,
     duration TIME NOT NULL,
     CONSTRAINT PK_Lecture PRIMARY KEY (id),
-    CONSTRAINT FK_Item FOREIGN KEY (id) REFERENCES Item (id)
+    CONSTRAINT FK_Lecture_Item FOREIGN KEY (id) REFERENCES Item (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -203,66 +201,58 @@ CREATE TABLE
     subtitle_language VARCHAR (27) NOT NULL,
     subtitle VARCHAR (2084) NOT NULL,
     CONSTRAINT PK_LectureSubtitle PRIMARY KEY (lecture_id, subtitle_language),
-    CONSTRAINT FK_Lecture FOREIGN KEY (lecture_id) REFERENCES Lecture (id)
+    CONSTRAINT FK_LectureSubtitle_Lecture FOREIGN KEY (lecture_id) REFERENCES Lecture (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 
--- drop table Quiz
--- CREATE TABLE
---   Quiz (
---     id SMALLINT UNSIGNED NOT NULL,
---     section_id SMALLINT UNSIGNED NOT NULL,
---     course_id MEDIUMINT UNSIGNED NOT NULL,
---     CONSTRAINT PK_Quiz PRIMARY KEY (id),
---     CONSTRAINT FK_Quiz_Item FOREIGN KEY (id, section_id, course_id) REFERENCES Item (id, section_id, course_id)
---   ) DEFAULT CHARACTER
--- SET
---   utf8mb4 COLLATE utf8mb4_unicode_ci;
--- CREATE TABLE
---   QuizQA (
---     quiz_id SMALLINT UNSIGNED NOT NULL,
---     quiz_qa_id TINYINT UNSIGNED NOT NULL,
---     question VARCHAR (600) NOT NULL,
---     correct_answer VARCHAR (600) NOT NULL,
---     CONSTRAINT PK_QuizQA PRIMARY KEY (quiz_id, quiz_qa_id),
---     Index Idx (quiz_id, quiz_qa_id),
---     CONSTRAINT FK_Quiz FOREIGN KEY (quiz_id) REFERENCES Quiz (id)
--- --     CONSTRAINT FK_QuizQAAnswerDetail FOREIGN KEY (correct_answer) REFERENCES QuizQAAnswerDetail (answer)
---   ) DEFAULT CHARACTER
--- SET
---   utf8mb4 COLLATE utf8mb4_unicode_ci;
---   
--- CREATE TABLE
---   QuizQAAnswerDetail (
---     quiz_id SMALLINT UNSIGNED NOT NULL,
---     quiz_qa_id TINYINT UNSIGNED NOT NULL,
---     answer VARCHAR (600) NOT NULL,
---     explanation VARCHAR (600) NOT NULL,
---     CONSTRAINT PK_QuizQAAnswerDetail PRIMARY KEY (quiz_id, quiz_qa_id),
---     CONSTRAINT FK_QuizQA_Id FOREIGN KEY (quiz_id, quiz_qa_id) REFERENCES QuizQA (quiz_id, quiz_qa_id),
---     CONSTRAINT FK_QuizQA_answer FOREIGN KEY (answer) REFERENCES QuizQA (correct_answer)
---   ) DEFAULT CHARACTER
--- SET
---   utf8mb4 COLLATE utf8mb4_unicode_ci;
--- ALter Table QuizQA add CONSTRAINT FK_QuizQAAnswerDetail FOREIGN KEY (correct_answer) REFERENCES QuizQAAnswerDetail (answer)
--- CREATE TABLE
---   StudentAnswerQA (
---     quiz_id SMALLINT UNSIGNED NOT NULL,
---     quiz_qa_id TINYINT UNSIGNED NOT NULL,
---     answer VARCHAR (600) NOT NULL,
---     learner_id MEDIUMINT UNSIGNED NOT NULL,
---     course_id MEDIUMINT UNSIGNED NOT NULL,
---     CONSTRAINT PK_StudentAnswerQA PRIMARY KEY (quiz_id, quiz_qa_id),
---     CONSTRAINT FK_QuizQA_Id FOREIGN KEY (quiz_qa_id) REFERENCES QuizQA (quiz_qa_id),
---     CONSTRAINT FK_QuizQA_quizId FOREIGN KEY (quiz_id) REFERENCES QuizQA (quiz_id),
---     CONSTRAINT FK_QuizQAAnswerDetail FOREIGN KEY (answer) REFERENCES QuizQAAnswerDetail (answer),
---     CONSTRAINT FK_QuizQA_learnerId FOREIGN KEY (learner_id) REFERENCES EnrollementCourse (learner_id),
---     CONSTRAINT FK_QuizQA_courseId FOREIGN KEY (course_id) REFERENCES EnrollementCourse (course_id),
---   ) DEFAULT CHARACTER
--- SET
---   utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE TABLE
+  Quiz (
+    id SMALLINT UNSIGNED NOT NULL,
+    section_id SMALLINT UNSIGNED NOT NULL,
+    course_id MEDIUMINT UNSIGNED NOT NULL,
+    CONSTRAINT PK_Quiz PRIMARY KEY (id),
+    CONSTRAINT FK_Quiz_Item FOREIGN KEY (id, section_id, course_id) REFERENCES Item (id, section_id, course_id)
+  ) DEFAULT CHARACTER
+SET
+  utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE
+  QuizQA (
+    quiz_id SMALLINT UNSIGNED NOT NULL,
+    id TINYINT UNSIGNED NOT NULL,
+    section_id SMALLINT UNSIGNED NOT NULL,
+    course_id MEDIUMINT UNSIGNED NOT NULL,
+    question VARCHAR (600) NOT NULL,
+    correct_answer VARCHAR (600),
+    CONSTRAINT PK_QuizQA PRIMARY KEY (id, quiz_id, section_id, course_id),
+    INDEX Idx (id, quiz_id, section_id, course_id),
+    CONSTRAINT FK_QuizQA_Quiz FOREIGN KEY (quiz_id, section_id, course_id) REFERENCES Quiz (id, section_id, course_id)
+--     CONSTRAINT FK_QuizQAAnswerDetail FOREIGN KEY (correct_answer) REFERENCES QuizQAAnswerDetail (answer)
+  ) DEFAULT CHARACTER
+SET
+  utf8mb4 COLLATE utf8mb4_unicode_ci;
+  
+CREATE TABLE
+  QuizQAAnswerDetail (
+    quiz_id SMALLINT UNSIGNED NOT NULL,
+    quiz_qa_id TINYINT UNSIGNED NOT NULL,
+    section_id SMALLINT UNSIGNED NOT NULL,
+    course_id MEDIUMINT UNSIGNED NOT NULL,
+    answer VARCHAR (600) NOT NULL,
+    explanation VARCHAR (600) NOT NULL,
+    CONSTRAINT PK_QuizQAAnswerDetail PRIMARY KEY (answer, quiz_qa_id, quiz_id, section_id, course_id),
+    INDEX Idx (answer, quiz_qa_id, quiz_id, section_id, course_id),
+    CONSTRAINT FK_QuizQAAnswerDetail_QuizQA FOREIGN KEY (quiz_qa_id, quiz_id, section_id, course_id) REFERENCES QuizQA(id, quiz_id, section_id, course_id)
+  ) DEFAULT CHARACTER
+SET
+  utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+ALTER TABLE QuizQA 
+ADD CONSTRAINT FK_QuizQA_QuizQAAnswerDetail 
+FOREIGN KEY (correct_answer) REFERENCES QuizQAAnswerDetail(answer);
+
 CREATE TABLE
   Question (
     question_id SMALLINT UNSIGNED NOT NULL,
@@ -345,6 +335,20 @@ CREATE TABLE
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+CREATE TABLE
+  StudentAnswerQA (
+    quiz_id SMALLINT UNSIGNED NOT NULL,
+    quiz_qa_id TINYINT UNSIGNED NOT NULL,
+    section_id SMALLINT UNSIGNED NOT NULL,
+    course_id MEDIUMINT UNSIGNED NOT NULL,
+    answer VARCHAR (600) NOT NULL,
+    learner_id MEDIUMINT UNSIGNED NOT NULL,
+    CONSTRAINT PK_StudentAnswerQA PRIMARY KEY (quiz_id, quiz_qa_id, section_id, course_id, answer),
+    CONSTRAINT FK_StudentAnswerQA_QuizQAAnswerDetail FOREIGN KEY (answer, quiz_qa_id, quiz_id, section_id, course_id) REFERENCES QuizQAAnswerDetail (answer, quiz_qa_id, quiz_id, section_id, course_id),
+    CONSTRAINT FK_StudentAnswerQA_EnrollementCourse FOREIGN KEY (course_id, learner_id) REFERENCES EnrollementCourse (course_id, learner_id)
+  ) DEFAULT CHARACTER
+SET
+  utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- Thu
 CREATE TABLE
@@ -399,7 +403,7 @@ CREATE TABLE
     content VARCHAR(10000) NOT NULL,
     CONSTRAINT PK_Adjustment PRIMARY KEY (course_id, admin_id, create_at),
     CONSTRAINT FK_Adjustment_Course FOREIGN KEY (course_id) REFERENCES Course (id),
-    CONSTRAINT FK_Admin FOREIGN KEY (admin_id) REFERENCES Admin (admin_id)
+    CONSTRAINT FK_Adjustment_Admin FOREIGN KEY (admin_id) REFERENCES Admin (admin_id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -445,18 +449,17 @@ CREATE TABLE
     create_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     tier_difference TINYINT UNSIGNED NOT NULL,
     CONSTRAINT PK_PromotionalProgramHistory PRIMARY KEY (id, create_at),
-    CONSTRAINT FK_PromotionalProgram FOREIGN KEY (id) REFERENCES PromotionalProgram (id)
+    CONSTRAINT FK_PromotionalProgramHistory_PromotionalProgram FOREIGN KEY (id) REFERENCES PromotionalProgram (id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 
 CREATE TABLE
   CourseHighlight (
     id MEDIUMINT UNSIGNED NOT NULL,
     downloadable_documents SMALLINT UNSIGNED NOT NULL,
     students_enrolled MEDIUMINT UNSIGNED NOT NULL,
-    average_rating FLOAT UNSIGNED NOT NULL,
+    average_rating FLOAT NOT NULL,
     sale_price MEDIUMINT UNSIGNED NOT NULL,
     no_sections SMALLINT UNSIGNED NOT NULL,
     duration MEDIUMINT UNSIGNED NOT NULL,
@@ -487,7 +490,7 @@ CREATE TABLE
     revenue INT UNSIGNED NOT NULL,
     CONSTRAINT PK_MonthlyCourseIncomeVipInstructor PRIMARY KEY (course_id, date, vip_instructor_id),
     CONSTRAINT FK_MonthlyCourseIncomeVipInstructor_Course FOREIGN KEY (course_id) REFERENCES MonthlyCourseIncome (course_id),
-    CONSTRAINT FK_VipInstructor FOREIGN KEY (vip_instructor_id) REFERENCES VipInstructor (vip_instructor_id)
+    CONSTRAINT FK_MonthlyCourseIncomeVipInstructor_VipInstructor FOREIGN KEY (vip_instructor_id) REFERENCES VipInstructor (vip_instructor_id)
   ) DEFAULT CHARACTER
 SET
   utf8mb4 COLLATE utf8mb4_unicode_ci;
