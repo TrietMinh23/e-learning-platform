@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'sql'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
@@ -25,6 +25,20 @@ module.exports = {
       'error',
       {
         endOfLine: 'auto',
+      },
+    ],
+    'sql/format': [
+      2,
+      {
+        ignoreExpressions: false,
+        ignoreInline: true,
+        ignoreTagless: true,
+      },
+    ],
+    'sql/no-unsafe-query': [
+      2,
+      {
+        allowLiteral: false,
       },
     ],
   },
