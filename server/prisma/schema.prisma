@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,7 +8,460 @@ datasource db {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  email String  @unique
-  name  String?
+  id         Int         @id @db.UnsignedMediumInt
+  full_name  String      @db.VarChar(52)
+  email      String      @unique(map: "email") @db.VarChar(320)
+  position   String      @db.VarChar(50)
+  role       User_role
+  Admin      Admin?
+  Answer     Answer[]
+  Instructor Instructor?
+  Learner    Learner?
+  Question   Question[]
+}
+
+model Adjustment {
+  course_id Int      @db.UnsignedMediumInt
+  admin_id  Int      @db.UnsignedMediumInt
+  create_at DateTime @default(now()) @db.DateTime(0)
+  content   String   @db.VarChar(10000)
+  Admin     Admin    @relation(fields: [admin_id], references: [admin_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Adjustment_Admin")
+  Course    Course   @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Adjustment_Course")
+
+  @@id([course_id, admin_id, create_at])
+  @@index([admin_id], map: "FK_Adjustment_Admin")
+}
+
+model Admin {
+  admin_id   Int          @id @db.UnsignedMediumInt
+  Adjustment Adjustment[]
+  User       User         @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Admin_User")
+}
+
+model Answer {
+  question_id     Int      @db.UnsignedSmallInt
+  answer_id       Int      @db.UnsignedSmallInt
+  item_id         Int      @db.UnsignedSmallInt
+  course_id       Int      @db.UnsignedMediumInt
+  section_id      Int      @db.UnsignedSmallInt
+  answer_datetime DateTime @db.DateTime(0)
+  answer_message  String   @db.VarChar(600)
+  user_id         Int      @db.UnsignedMediumInt
+  User            User     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Answer_User")
+  Question        Question @relation(fields: [question_id, item_id, section_id, course_id], references: [question_id, item_id, section_id, course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Question")
+
+  @@id([question_id, answer_id, item_id, course_id, section_id])
+  @@index([user_id], map: "FK_Answer_User")
+  @@index([question_id, item_id, section_id, course_id], map: "FK_Question")
+}
+
+model Category {
+  category_id   Int          @id @db.UnsignedTinyInt
+  category_name String       @db.VarChar(50)
+  SubCategory   SubCategory?
+}
+
+model Course {
+  id                  Int                   @id @db.UnsignedMediumInt
+  title               String                @db.VarChar(60)
+  subtitle            String                @db.VarChar(120)
+  description         String                @db.VarChar(2000)
+  language            String                @db.VarChar(27)
+  requirement         String                @db.VarChar(160)
+  image               String                @db.VarChar(2084)
+  tier_id             Int                   @db.UnsignedTinyInt
+  status              Course_status
+  subcategory_id      Int                   @db.UnsignedTinyInt
+  Adjustment          Adjustment[]
+  SubCategory         SubCategory           @relation(fields: [subcategory_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Course_SubCategory")
+  Tier                Tier                  @relation(fields: [tier_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Course_Tier")
+  CourseHighlight     CourseHighlight?
+  CourseInstructor    CourseInstructor[]
+  CourseObjective     CourseObjective[]
+  EnrollementCourse   EnrollementCourse[]
+  MonthlyCourseIncome MonthlyCourseIncome[]
+  Notification        Notification[]
+  Section             Section[]
+  ShoppingCart        ShoppingCart[]
+
+  @@index([subcategory_id], map: "FK_Course_SubCategory")
+  @@index([tier_id], map: "FK_Course_Tier")
+}
+
+model CourseHighlight {
+  id                     Int    @id @db.UnsignedMediumInt
+  downloadable_documents Int    @db.UnsignedSmallInt
+  students_enrolled      Int    @db.UnsignedMediumInt
+  average_rating         Float  @db.Float
+  sale_price             Int    @db.UnsignedMediumInt
+  no_sections            Int    @db.UnsignedSmallInt
+  duration               Int    @db.UnsignedMediumInt
+  Course                 Course @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseHighlight_Course")
+}
+
+model CourseInstructor {
+  course_id                                                                       Int                       @db.UnsignedMediumInt
+  instructor_id                                                                   Int                       @db.UnsignedMediumInt
+  Course                                                                          Course                    @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseInstructor_Course")
+  Instructor                                                                      Instructor                @relation(fields: [instructor_id], references: [instructor_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseInstructor_Instructor")
+  CourseInstructorHistory_CourseInstructorHistory_course_idToCourseInstructor     CourseInstructorHistory[] @relation("CourseInstructorHistory_course_idToCourseInstructor")
+  CourseInstructorHistory_CourseInstructorHistory_instructor_idToCourseInstructor CourseInstructorHistory[] @relation("CourseInstructorHistory_instructor_idToCourseInstructor")
+
+  @@id([course_id, instructor_id])
+  @@index([instructor_id], map: "FK_CourseInstructor_Instructor")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model CourseInstructorHistory {
+  course_id                                                                Int              @db.UnsignedMediumInt
+  instructor_id                                                            Int              @db.UnsignedMediumInt
+  create_at                                                                DateTime         @default(now()) @db.DateTime(0)
+  course_profit_percent                                                    Int              @db.UnsignedSmallInt
+  CourseInstructor_CourseInstructorHistory_course_idToCourseInstructor     CourseInstructor @relation("CourseInstructorHistory_course_idToCourseInstructor", fields: [course_id], references: [course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseInstructor_CourseID")
+  CourseInstructor_CourseInstructorHistory_instructor_idToCourseInstructor CourseInstructor @relation("CourseInstructorHistory_instructor_idToCourseInstructor", fields: [instructor_id], references: [instructor_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseInstructor_InstructorID")
+
+  @@id([course_id, instructor_id, create_at])
+  @@index([instructor_id], map: "FK_CourseInstructor_InstructorID")
+}
+
+model CourseObjective {
+  course_id        Int    @db.UnsignedMediumInt
+  course_objective String @db.VarChar(160)
+  Course           Course @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseObjective_Course")
+
+  @@id([course_id, course_objective])
+}
+
+model CourseProgress {
+  course_id         Int               @db.UnsignedMediumInt
+  section_id        Int               @db.UnsignedSmallInt
+  item_id           Int               @db.UnsignedSmallInt
+  learner_id        Int               @db.UnsignedMediumInt
+  EnrollementCourse EnrollementCourse @relation(fields: [course_id, learner_id], references: [course_id, learner_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseProgress_EnrollementCourse")
+  Item              Item              @relation(fields: [course_id, section_id, item_id], references: [course_id, section_id, id], onDelete: NoAction, onUpdate: NoAction, map: "FK_CourseProgress_Item")
+
+  @@id([course_id, section_id, item_id, learner_id])
+  @@index([course_id, learner_id], map: "FK_CourseProgress_EnrollementCourse")
+}
+
+model EnrollementCourse {
+  course_id              Int               @db.UnsignedMediumInt
+  learner_id             Int               @db.UnsignedMediumInt
+  course_completion_date DateTime          @db.Date
+  course_rating          Int               @db.UnsignedSmallInt
+  course_comment         String            @db.VarChar(2000)
+  final_course_price     Int               @db.UnsignedMediumInt
+  payment_id             Int               @db.UnsignedMediumInt
+  CourseProgress         CourseProgress[]
+  Learner                Learner           @relation(fields: [learner_id], references: [learner_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_EnrollementCours_Learner")
+  Course                 Course            @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_EnrollementCourse_Course")
+  Payment                Payment           @relation(fields: [payment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Payment")
+  StudentAnswerQA        StudentAnswerQA[]
+
+  @@id([course_id, learner_id])
+  @@index([learner_id], map: "FK_EnrollementCours_Learner")
+  @@index([payment_id], map: "FK_Payment")
+}
+
+model Instructor {
+  instructor_id    Int                @id @db.UnsignedMediumInt
+  date_of_birth    DateTime           @db.Date
+  address          String             @db.VarChar(255)
+  phone            String             @db.VarChar(11)
+  academic_degree  String             @db.VarChar(50)
+  working_unit     String             @db.VarChar(100)
+  academic_title   String             @db.VarChar(50)
+  description      String             @db.VarChar(1000)
+  type             Instructor_type
+  CourseInstructor CourseInstructor[]
+  User             User               @relation(fields: [instructor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Instructor_User")
+  VipInstructor    VipInstructor?
+}
+
+model Item {
+  id             Int              @db.UnsignedSmallInt
+  section_id     Int              @db.UnsignedSmallInt
+  course_id      Int              @db.UnsignedMediumInt
+  title          String           @db.VarChar(80)
+  order_item_id  Int              @db.UnsignedSmallInt
+  description    String           @db.VarChar(255)
+  type           Item_type
+  CourseProgress CourseProgress[]
+  Item           Item             @relation("ItemToItem", fields: [order_item_id, section_id, course_id], references: [id, section_id, course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Item_Item")
+  other_Item     Item[]           @relation("ItemToItem")
+  Section        Section          @relation(fields: [course_id, section_id], references: [course_id, id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Item_Section")
+  ItemHistory    ItemHistory[]
+  Lecture        Lecture?
+  Question       Question[]
+  Quiz           Quiz?
+
+  @@id([id, section_id, course_id])
+  @@index([order_item_id, section_id, course_id], map: "FK_Item_Item")
+  @@index([course_id, section_id], map: "FK_Item_Section")
+  @@index([id, section_id, course_id], map: "idx_id")
+}
+
+model ItemHistory {
+  item_id    Int      @db.UnsignedSmallInt
+  section_id Int      @db.UnsignedSmallInt
+  course_id  Int      @db.UnsignedMediumInt
+  create_at  DateTime @db.DateTime(0)
+  Item       Item     @relation(fields: [item_id, section_id, course_id], references: [id, section_id, course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ItemHistory_Item")
+
+  @@id([item_id, section_id, course_id, create_at])
+}
+
+model Learner {
+  learner_id               Int                 @id @db.UnsignedMediumInt
+  learner_default_language String              @db.VarChar(20)
+  EnrollementCourse        EnrollementCourse[]
+  User                     User                @relation(fields: [learner_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Learner_User")
+  ShoppingCart             ShoppingCart?
+}
+
+model Lecture {
+  id              Int               @id @db.UnsignedSmallInt
+  resource        String            @db.VarChar(2084)
+  url             String            @db.VarChar(2084)
+  duration        DateTime          @db.Time(0)
+  Item            Item              @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Lecture_Item")
+  LectureSubtitle LectureSubtitle[]
+}
+
+model LectureSubtitle {
+  lecture_id        Int     @db.UnsignedSmallInt
+  subtitle_language String  @db.VarChar(27)
+  subtitle          String  @db.VarChar(2084)
+  Lecture           Lecture @relation(fields: [lecture_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_LectureSubtitle_Lecture")
+
+  @@id([lecture_id, subtitle_language])
+}
+
+model MonthlyCourseIncome {
+  course_id                        Int                                @db.UnsignedMediumInt
+  date                             DateTime                           @db.Date
+  final_amount                     Int                                @db.UnsignedInt
+  Course                           Course                             @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MonthlyCourseIncome_Course")
+  MonthlyCourseIncomeVipInstructor MonthlyCourseIncomeVipInstructor[]
+
+  @@id([course_id, date])
+}
+
+model MonthlyCourseIncomeVipInstructor {
+  course_id           Int                 @db.UnsignedMediumInt
+  date                DateTime            @db.Date
+  vip_instructor_id   Int                 @db.UnsignedMediumInt
+  revenue             Int                 @db.UnsignedInt
+  MonthlyCourseIncome MonthlyCourseIncome @relation(fields: [course_id], references: [course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MonthlyCourseIncomeVipInstructor_Course")
+  VipInstructor       VipInstructor       @relation(fields: [vip_instructor_id], references: [vip_instructor_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_MonthlyCourseIncomeVipInstructor_VipInstructor")
+
+  @@id([course_id, date, vip_instructor_id])
+  @@index([vip_instructor_id], map: "FK_MonthlyCourseIncomeVipInstructor_VipInstructor")
+}
+
+model Notification {
+  course_id Int               @db.UnsignedMediumInt
+  type      Notification_type
+  content   String            @db.VarChar(10000)
+  Course    Course            @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Notification_Course")
+
+  @@id([course_id, type])
+}
+
+model Payment {
+  id                Int                 @id @default(autoincrement()) @db.UnsignedMediumInt
+  date              DateTime            @default(now()) @db.DateTime(0)
+  total_price       Int                 @db.UnsignedMediumInt
+  total_course      Int                 @db.UnsignedMediumInt
+  EnrollementCourse EnrollementCourse[]
+}
+
+model PromotionalProgram {
+  id                        Int                               @id @default(autoincrement()) @db.UnsignedTinyInt
+  name                      String                            @db.VarChar(80)
+  content                   String                            @db.VarChar(10000)
+  day_start                 DateTime                          @db.Date
+  day_end                   DateTime                          @db.Date
+  repeating_type            PromotionalProgram_repeating_type
+  tier_difference           Int                               @db.UnsignedTinyInt
+  PromotionalProgramHistory PromotionalProgramHistory[]
+}
+
+model PromotionalProgramHistory {
+  id                 Int                @db.UnsignedTinyInt
+  create_at          DateTime           @default(now()) @db.DateTime(0)
+  tier_difference    Int                @db.UnsignedTinyInt
+  PromotionalProgram PromotionalProgram @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_PromotionalProgramHistory_PromotionalProgram")
+
+  @@id([id, create_at])
+}
+
+model Question {
+  question_id       Int      @db.UnsignedSmallInt
+  section_id        Int      @db.UnsignedSmallInt
+  course_id         Int      @db.UnsignedMediumInt
+  item_id           Int      @db.UnsignedSmallInt
+  question_datetime DateTime @db.DateTime(0)
+  question_message  String   @db.VarChar(600)
+  user_id           Int      @db.UnsignedMediumInt
+  Answer            Answer[]
+  Item              Item     @relation(fields: [item_id, section_id, course_id], references: [id, section_id, course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Question_Item")
+  User              User     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Question_User")
+
+  @@id([question_id, item_id, section_id, course_id])
+  @@index([item_id, section_id, course_id], map: "FK_Question_Item")
+  @@index([user_id], map: "FK_Question_User")
+}
+
+model Quiz {
+  id         Int      @id @db.UnsignedSmallInt
+  section_id Int      @db.UnsignedSmallInt
+  course_id  Int      @db.UnsignedMediumInt
+  Item       Item     @relation(fields: [id, section_id, course_id], references: [id, section_id, course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Quiz_Item")
+  QuizQA     QuizQA[]
+
+  @@index([id, section_id, course_id], map: "FK_Quiz_Item")
+}
+
+model QuizQA {
+  quiz_id                                                                               Int                  @db.UnsignedSmallInt
+  id                                                                                    Int                  @db.UnsignedTinyInt
+  section_id                                                                            Int                  @db.UnsignedSmallInt
+  course_id                                                                             Int                  @db.UnsignedMediumInt
+  question                                                                              String               @db.VarChar(600)
+  correct_answer                                                                        String?              @db.VarChar(600)
+  Quiz                                                                                  Quiz                 @relation(fields: [quiz_id, section_id, course_id], references: [id, section_id, course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuizQA_Quiz")
+  QuizQAAnswerDetail_QuizQA_correct_answerToQuizQAAnswerDetail                          QuizQAAnswerDetail?  @relation("QuizQA_correct_answerToQuizQAAnswerDetail", fields: [correct_answer], references: [answer], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuizQA_QuizQAAnswerDetail")
+  QuizQAAnswerDetail_QuizQAAnswerDetail_quiz_qa_id_quiz_id_section_id_course_idToQuizQA QuizQAAnswerDetail[] @relation("QuizQAAnswerDetail_quiz_qa_id_quiz_id_section_id_course_idToQuizQA")
+
+  @@id([id, quiz_id, section_id, course_id])
+  @@index([quiz_id, section_id, course_id], map: "FK_QuizQA_Quiz")
+  @@index([correct_answer], map: "FK_QuizQA_QuizQAAnswerDetail")
+  @@index([id, quiz_id, section_id, course_id], map: "Idx")
+}
+
+model QuizQAAnswerDetail {
+  quiz_id                                                                   Int              @db.UnsignedSmallInt
+  quiz_qa_id                                                                Int              @db.UnsignedTinyInt
+  section_id                                                                Int              @db.UnsignedSmallInt
+  course_id                                                                 Int              @db.UnsignedMediumInt
+  answer                                                                    String           @db.VarChar(600)
+  explanation                                                               String           @db.VarChar(600)
+  QuizQA_QuizQA_correct_answerToQuizQAAnswerDetail                          QuizQA[]         @relation("QuizQA_correct_answerToQuizQAAnswerDetail")
+  QuizQA_QuizQAAnswerDetail_quiz_qa_id_quiz_id_section_id_course_idToQuizQA QuizQA           @relation("QuizQAAnswerDetail_quiz_qa_id_quiz_id_section_id_course_idToQuizQA", fields: [quiz_qa_id, quiz_id, section_id, course_id], references: [id, quiz_id, section_id, course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_QuizQAAnswerDetail_QuizQA")
+  StudentAnswerQA                                                           StudentAnswerQA?
+
+  @@id([answer, quiz_qa_id, quiz_id, section_id, course_id])
+  @@index([quiz_qa_id, quiz_id, section_id, course_id], map: "FK_QuizQAAnswerDetail_QuizQA")
+  @@index([answer, quiz_qa_id, quiz_id, section_id, course_id], map: "Idx")
+}
+
+model Section {
+  course_id        Int            @db.UnsignedMediumInt
+  id               Int            @db.UnsignedSmallInt
+  title            String         @db.VarChar(80)
+  number_of_item   Int            @db.UnsignedSmallInt
+  duration         DateTime       @db.Time(0)
+  status           Section_status
+  order_section_id Int            @db.UnsignedSmallInt
+  Item             Item[]
+  Course           Course         @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Section_Course")
+  Section          Section        @relation("SectionToSection", fields: [course_id, order_section_id], references: [course_id, id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Section_Section")
+  other_Section    Section[]      @relation("SectionToSection")
+
+  @@id([course_id, id])
+  @@index([course_id, order_section_id], map: "FK_Section_Section")
+  @@index([course_id, id], map: "idx_id")
+}
+
+model ShoppingCart {
+  learner_id Int     @id @db.UnsignedMediumInt
+  course_id  Int     @db.UnsignedMediumInt
+  Learner    Learner @relation(fields: [learner_id], references: [learner_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Learner")
+  Course     Course  @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ShoppingCart_Course")
+
+  @@index([course_id], map: "FK_ShoppingCart_Course")
+}
+
+model StudentAnswerQA {
+  quiz_id            Int                @db.UnsignedSmallInt
+  quiz_qa_id         Int                @db.UnsignedTinyInt
+  section_id         Int                @db.UnsignedSmallInt
+  course_id          Int                @db.UnsignedMediumInt
+  answer             String             @db.VarChar(600)
+  learner_id         Int                @db.UnsignedMediumInt
+  EnrollementCourse  EnrollementCourse  @relation(fields: [course_id, learner_id], references: [course_id, learner_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_StudentAnswerQA_EnrollementCourse")
+  QuizQAAnswerDetail QuizQAAnswerDetail @relation(fields: [answer, quiz_qa_id, quiz_id, section_id, course_id], references: [answer, quiz_qa_id, quiz_id, section_id, course_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_StudentAnswerQA_QuizQAAnswerDetail")
+
+  @@id([quiz_id, quiz_qa_id, section_id, course_id, answer])
+  @@index([course_id, learner_id], map: "FK_StudentAnswerQA_EnrollementCourse")
+  @@index([answer, quiz_qa_id, quiz_id, section_id, course_id], map: "FK_StudentAnswerQA_QuizQAAnswerDetail")
+}
+
+model SubCategory {
+  id          Int      @id @db.UnsignedTinyInt
+  name        String   @db.VarChar(50)
+  category_id Int      @db.UnsignedTinyInt
+  Course      Course[]
+  Category    Category @relation(fields: [id], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_SubCategory_Category")
+}
+
+model Tier {
+  id     Int      @id @default(autoincrement()) @db.UnsignedTinyInt
+  price  Int      @db.UnsignedMediumInt
+  Course Course[]
+}
+
+model VipInstructor {
+  vip_instructor_id                Int                                @id @db.UnsignedMediumInt
+  tin_number                       String                             @db.Char(9)
+  country                          String                             @db.VarChar(20)
+  tax_filling_date                 DateTime                           @db.Date
+  zip_code                         String                             @db.VarChar(6)
+  image                            String                             @db.VarChar(2084)
+  MonthlyCourseIncomeVipInstructor MonthlyCourseIncomeVipInstructor[]
+  Instructor                       Instructor                         @relation(fields: [vip_instructor_id], references: [instructor_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_VipInstructor_Instructor")
+}
+
+enum Notification_type {
+  adjustment
+  promotional_program
+  course_highlight
+  price_conversion
+  start_of_course
+  end_of_course
+}
+
+enum User_role {
+  admin
+  learner
+  instructor
+}
+
+enum PromotionalProgram_repeating_type {
+  weekly
+  monthly
+  yearly
+}
+
+enum Section_status {
+  pending
+  publish
+  unpublish
+}
+
+enum Item_type {
+  lecture
+  quiz
+}
+
+enum Course_status {
+  pending
+  approved
+  rejected
+}
+
+enum Instructor_type {
+  instructor
+  vip_instructor
 }
