@@ -95,16 +95,16 @@
     line-height: 16px;
   }
 }
-/* CSS tùy chỉnh */
+
 ::-webkit-scrollbar {
-  width: 4px; /* Độ rộng của thanh cuộn dọc */
-  height: 4px; /* Độ cao của thanh cuộn ngang */
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.3); /* Màu của thanh cuộn */
-  border-radius: 3px; /* Bo tròn góc */
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* Nền thanh cuộn */
+  background: transparent;
 }
