@@ -14,7 +14,7 @@ const Item: React.FC<ItemProps> = ({ courseTitle, instructors, price }) => {
   return (
     <div className="w-full flex flex-row border-b-2 sm:py-0 2xl:py-3">
       <div className="grow flex items-center justify-between sm:ml-2 lg:ml-3 2xl:ml-5">
-        <div className="w-fit h-fit  sm:my-2 sm:mr-2  relative">
+        <div className="sm:w-[64px] sm:h-[32px] lg:w-[80px] lg:h-[50px]  sm:my-2 sm:mr-2  relative">
           <Image
             src="https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
             alt="Kitten"
