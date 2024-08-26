@@ -19,16 +19,17 @@ const config: Config = {
         purple3: "#B3B6F2",
         green: "#62D98B",
         orange: "#FF6636",
+        light_orange:"#FFEEE8",
         gray: {
           dark: "#1D2026",
           medium: "#6E7485",
-          light: "#8C94A3",
+          light: "#F5F7FA",
         },
         searchBackground: "#F5F7FA",
         background: "#F5F7FA",
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/forms")],
 };
 export default config;
