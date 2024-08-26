@@ -11,7 +11,7 @@ import { CoursedetailModule } from './coursedetail/coursedetail.module';
 import { LecturesModule } from './lectures/lectures.module';
 import { LecturesubtitlesModule } from './lecturesubtitles/lecturesubtitles.module';
 import { ReadShoppingCartModule } from './read_shopping_cart/read_shopping_cart.module';
-// import { PaymentModule } from './payment/payment.module';
+import { PaymentModule } from './payment/payment.module';
 import { ModulecoursesModule } from './modulecourses/modulecourses.module';
 
 @Module({

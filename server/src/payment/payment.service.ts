@@ -9,7 +9,7 @@ export class PaymentService {
   async create(createPaymentDto: CreatePaymentDto) {
     const res = await this.prismaService
       .$queryRaw`CALL create_payment_and_enrollment(
-      60099,
+      60199,
       1
     );`;
     return res;

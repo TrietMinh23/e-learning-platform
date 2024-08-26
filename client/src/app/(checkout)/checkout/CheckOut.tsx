@@ -29,7 +29,10 @@ const CheckOut= () => {
     { id: 'card3' }
   ];
 
-
+  function handlePaymentRequest() {
+    // Display the data or a success message in an alert
+    alert(`Payment request successful`);
+  }
 
   return (
     <div className={cn(s.checkOutContainer, "h-full w-9/12 mx-auto flex flex-row sm:my-5 lg:my-7")}>
@@ -80,7 +83,7 @@ const CheckOut= () => {
             </div>
           </div>
           <div>
-            <Button type="primary" >
+            <Button type="primary" onClick={() => handlePaymentRequest()}>
               Complete Payment
             </Button>
           </div>

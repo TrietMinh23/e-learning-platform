@@ -128,10 +128,10 @@ const ListCom: React.FC<CourseDetailProps> = ({ course }) => {
 
   const [ratingCounts, setRatingCounts] = useState<RatingCounts>({
     1: 0,
-    2: 0,
+    2: 1,
     3: 0,
-    4: 0,
-    5: 0
+    4: 2,
+    5: 2
   });
 
 
